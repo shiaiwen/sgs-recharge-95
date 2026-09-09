@@ -1,0 +1,111 @@
+.account {
+  min-height: 100vh;
+  padding: 32px 28px 180px;
+  box-sizing: border-box;
+}
+
+.section {
+  margin-bottom: 28px;
+  padding: 38px 34px;
+  background: #fff;
+  border: 1px solid #e8eef7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.06);
+  box-sizing: border-box;
+}
+
+.section-title {
+  display: block;
+  margin-bottom: 24px;
+  font-size: 34px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.field {
+  height: 108px;
+  padding: 0 30px;
+  line-height: 108px;
+  color: #0f172a;
+  background: #fff;
+  border: 2px solid #d7e1ee;
+  border-radius: 18px;
+  font-size: 32px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.field:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.08);
+}
+
+.add-btn {
+  height: 106px;
+  line-height: 106px;
+  margin-top: 24px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 34px;
+  font-weight: 600;
+  border-radius: 18px;
+  border: none;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+.add-btn::after {
+  border: none;
+}
+
+.empty {
+  padding: 64px 20px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 29px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 18px;
+}
+
+.account-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 30px 28px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+}
+
+.account-item:last-child {
+  margin-bottom: 0;
+}
+
+.account-info {
+  flex: 1;
+  min-width: 0;
+  margin-right: 24px;
+}
+
+.name {
+  display: block;
+  font-size: 33px;
+  line-height: 1.45;
+  color: #1e293b;
+  font-weight: 500;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.delete {
+  flex-shrink: 0;
+  padding: 14px 20px;
+  font-size: 27px;
+  color: #ef4444;
+  background: #fff1f2;
+  border-radius: 10px;
+}

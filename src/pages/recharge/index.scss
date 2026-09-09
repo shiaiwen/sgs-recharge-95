@@ -1,0 +1,219 @@
+.recharge {
+  min-height: 100vh;
+  padding: 32px 28px 180px;
+  box-sizing: border-box;
+}
+
+.section,
+.qr-panel {
+  margin-bottom: 28px;
+  padding: 38px 34px;
+  background: #fff;
+  border: 1px solid #e8eef7;
+  border-radius: 24px;
+  box-shadow: 0 8px 28px rgba(37, 99, 235, 0.06);
+  box-sizing: border-box;
+}
+
+.section-title {
+  display: block;
+  margin-bottom: 24px;
+  font-size: 34px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.section-front {
+  position: relative;
+  z-index: 10;
+}
+
+.search-box {
+  position: relative;
+  z-index: 10;
+}
+
+.dropdown-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 8;
+}
+
+.search-input {
+  height: 108px;
+  padding: 0 30px;
+  line-height: 108px;
+  color: #0f172a;
+  background: #fff;
+  border: 2px solid #d7e1ee;
+  border-radius: 18px;
+  font-size: 32px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.08);
+}
+
+.active-input {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.dropdown {
+  position: absolute;
+  top: 112px;
+  right: 0;
+  left: 0;
+  max-height: 360px;
+  overflow: auto;
+  background: #fff;
+  border: 1px solid #dbe4f0;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14);
+}
+
+.dropdown-empty,
+.dropdown-item {
+  padding: 28px;
+  font-size: 31px;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.dropdown-empty {
+  color: #94a3b8;
+}
+
+.dropdown-item {
+  border-bottom: 1px solid #eef2f7;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item-hover {
+  background: #eff6ff;
+}
+
+.dropdown-name {
+  display: block;
+  color: #1e293b;
+  font-weight: 500;
+  line-height: 1.45;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.selected-tip {
+  display: block;
+  margin-top: 18px;
+  font-size: 27px;
+  line-height: 1.5;
+  color: #64748b;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.yuanbao-options {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -7px;
+}
+
+.yuanbao-option {
+  width: calc(50% - 14px);
+  margin: 0 7px 14px;
+  padding: 28px 8px;
+  color: #334155;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 18px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 500;
+  box-sizing: border-box;
+}
+
+.yuanbao-option.active {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+
+.other-title {
+  margin-top: 12px;
+}
+
+.pay-actions {
+  display: flex;
+  margin: 8px -8px 28px;
+}
+
+.pay-btn {
+  flex: 1;
+  height: 106px;
+  line-height: 106px;
+  margin: 0 8px;
+  color: #fff;
+  border-radius: 18px;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.18);
+}
+
+.pay-btn.wechat {
+  background: #2563eb;
+}
+
+.pay-btn.alipay {
+  color: #2563eb;
+  background: #fff;
+  border: 2px solid #2563eb;
+  box-sizing: border-box;
+  line-height: 102px;
+}
+
+.pay-btn.disabled {
+  opacity: 0.55;
+}
+
+.qr-panel {
+  margin-bottom: 20px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.qr-image {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-sizing: border-box;
+  user-select: auto;
+  -webkit-user-select: auto;
+  -webkit-touch-callout: default;
+}
+
+.qr-tip {
+  display: block;
+  margin-top: 22px;
+  font-size: 28px;
+  color: #64748b;
+}
