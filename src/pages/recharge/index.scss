@@ -1,6 +1,6 @@
 .recharge {
   min-height: 100vh;
-  padding: 32px 28px 180px;
+  padding: 32px 28px calc(240px + env(safe-area-inset-bottom));
   box-sizing: border-box;
 }
 
@@ -193,22 +193,46 @@
 .qr-panel {
   margin-bottom: 20px;
   text-align: center;
-  overflow: hidden;
+  overflow: visible;
+}
+
+.qr-frame {
+  width: 480px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-sizing: border-box;
 }
 
 .qr-image {
   display: block;
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 18px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-sizing: border-box;
+  width: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+  background: #fff;
   user-select: auto;
   -webkit-user-select: auto;
   -webkit-touch-callout: default;
+}
+
+.qr-frame taro-image,
+.qr-frame taro-image-core,
+.qr-frame .taro-img {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.qr-frame img {
+  position: static !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  transform: none !important;
 }
 
 .qr-tip {

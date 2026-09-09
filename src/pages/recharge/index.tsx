@@ -81,6 +81,12 @@ export default function Recharge() {
         return
       }
       setQrImage(image)
+      Taro.nextTick(() => {
+        Taro.pageScrollTo({
+          selector: '#qr-panel',
+          duration: 300
+        })
+      })
     } catch (error) {
       Taro.showToast({
         title: error instanceof Error ? error.message : '出码失败',
@@ -183,32 +189,19 @@ export default function Recharge() {
         </View>
       </View>
 
-      {qrImage && payChannel === 'wechat' ? (
-        <View className='qr-panel'>
-          <Text className='section-title'>微信收款码</Text>
-          <Image
-            className='qr-image'
-            src={qrImage}
-            mode='widthFix'
-            showMenuByLongpress={!isH5}
-          />
-          <Text className='qr-tip'>
-            {isH5
-              ? '长按二维码保存到手机相册'
-              : '长按二维码，使用微信菜单分享'}
+      {qrImage && payChannel ? (
+        <View className='qr-panel' id='qr-panel'>
+          <Text className='section-title'>
+            {payChannel === 'wechat' ? '微信收款码' : '支付宝收款码'}
           </Text>
-        </View>
-      ) : null}
-
-      {qrImage && payChannel === 'alipay' ? (
-        <View className='qr-panel'>
-          <Text className='section-title'>支付宝收款码</Text>
-          <Image
-            className='qr-image'
-            src={qrImage}
-            mode='widthFix'
-            showMenuByLongpress={!isH5}
-          />
+          <View className='qr-frame'>
+            <Image
+              className='qr-image'
+              src={qrImage}
+              mode='widthFix'
+              showMenuByLongpress={!isH5}
+            />
+          </View>
           <Text className='qr-tip'>
             {isH5
               ? '长按二维码保存到手机相册'
