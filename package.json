@@ -2,7 +2,7 @@
   "name": "sanguosha-recharge-miniprogram",
   "version": "1.0.0",
   "private": true,
-  "description": "三国杀充值小程序",
+  "description": "小工具",
   "templateInfo": {
     "name": "default",
     "typescript": true,
@@ -13,7 +13,8 @@
     "build:weapp": "taro build --type weapp",
     "build:h5": "taro build --type h5",
     "dev:weapp": "npm run build:weapp -- --watch",
-    "dev:h5": "npm run build:h5 -- --watch"
+    "dev:h5": "npm run build:h5 -- --watch",
+    "deploy": "node deploy/push.js"
   },
   "browserslist": [
     "defaults and fully supports es6-module",

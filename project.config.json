@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "dist/",
   "projectname": "sanguosha-recharge-miniprogram",
-  "description": "三国杀充值小程序",
+  "description": "小工具",
   "appid": "wxcdc6b2c395b8e0f2",
   "setting": {
     "urlCheck": true,

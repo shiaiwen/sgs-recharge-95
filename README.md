@@ -1,4 +1,4 @@
-# 三国杀95折充值小程序 - Easier to Be a Whale
+# 三国杀95折充值 - Easier to Be a Whale
 
 Taro 4 + React 微信小程序骨架。
 
