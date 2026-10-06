@@ -148,6 +148,19 @@ export default function Recharge() {
       </View>
 
       <View className='section'>
+        <Text className='section-title'>充值测试</Text>
+        <View
+          className={`yuanbao-option test-option ${!customYuanbao && yuanbao === '1' ? 'active' : ''}`}
+          onClick={() => {
+            setYuanbao('1')
+            setCustomYuanbao('')
+          }}
+        >
+          1 元宝
+        </View>
+        <Text className='test-tip'>
+          第一次充值前，建议先充值 1 元宝，花费0.01 元, 进行测试。确认元宝总额和累计充值都发生变化后，再进行充值。
+        </Text>
         <Text className='section-title'>常用金额</Text>
         <View className='yuanbao-options'>
           {YUANBAO_OPTIONS.map((item) => (
