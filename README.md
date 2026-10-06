@@ -22,3 +22,10 @@ npm run dev:weapp
 ```
 
 用微信开发者工具打开项目根目录，编译产物在 `dist/`。
+
+**发布**
+
+```bash
+npm run build:h5
+npm run deploy
+```
