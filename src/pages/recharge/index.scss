@@ -4,6 +4,29 @@
   box-sizing: border-box;
 }
 
+.notice {
+  margin-bottom: 28px;
+  padding: 28px 32px;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 24px;
+  box-sizing: border-box;
+}
+
+.notice-title,
+.notice-line {
+  display: block;
+  color: #9a3412;
+  font-size: 28px;
+  line-height: 1.6;
+}
+
+.notice-title {
+  margin-bottom: 8px;
+  font-size: 32px;
+  font-weight: 600;
+}
+
 .section,
 .qr-panel {
   margin-bottom: 28px;
@@ -170,6 +193,14 @@
   margin-top: 12px;
 }
 
+.reference-price {
+  display: block;
+  margin-top: 18px;
+  color: #b45309;
+  font-size: 28px;
+  line-height: 1.5;
+}
+
 .pay-actions {
   display: flex;
   margin: 8px -8px 28px;
@@ -211,21 +242,26 @@
 }
 
 .qr-frame {
-  width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 260PX;
+  height: 260PX;
   max-width: 100%;
   margin: 0 auto;
-  padding: 28px;
+  padding: 0;
   background: #fff;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 16PX;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .qr-image {
   display: block;
-  width: 100% !important;
-  height: auto !important;
-  overflow: visible !important;
+  width: 224PX !important;
+  height: 224PX !important;
+  overflow: hidden !important;
   background: #fff;
   user-select: auto;
   -webkit-user-select: auto;
@@ -236,17 +272,28 @@
 .qr-frame taro-image-core,
 .qr-frame .taro-img {
   display: block !important;
-  width: 100% !important;
-  height: auto !important;
-  overflow: visible !important;
+  width: 224PX !important;
+  height: 224PX !important;
+  overflow: hidden !important;
 }
 
 .qr-frame img {
   position: static !important;
-  width: 100% !important;
-  height: auto !important;
+  width: 224PX !important;
+  height: 224PX !important;
   max-height: none !important;
+  object-fit: contain;
   transform: none !important;
+}
+
+.pay-frame {
+  width: 168PX;
+  height: 184PX;
+  border: 0;
+  background: #fff;
+  flex-shrink: 0;
+  transform: scale(1.333);
+  transform-origin: center center;
 }
 
 .qr-tip {
@@ -254,4 +301,114 @@
   margin-top: 22px;
   font-size: 28px;
   color: #64748b;
+}
+
+.qr-panel-empty {
+  display: none;
+}
+
+.qr-placeholder {
+  display: block;
+  padding: 80px 20px;
+  color: #94a3b8;
+  font-size: 28px;
+  line-height: 1.6;
+}
+
+@media (min-width: 960px) {
+  .recharge-page {
+    max-width: 1120PX;
+    margin: 0 auto;
+    padding: 28PX 24PX 48PX;
+    box-sizing: border-box;
+  }
+
+  .notice,
+  .section,
+  .qr-panel {
+    padding: 20PX 22PX;
+    border-radius: 12PX;
+    box-shadow: 0 1PX 2PX rgba(15, 23, 42, 0.04);
+  }
+
+  .notice-title,
+  .section-title {
+    margin-bottom: 10PX;
+    font-size: 15PX;
+  }
+
+  .notice-line,
+  .selected-tip,
+  .test-tip,
+  .reference-price,
+  .qr-tip,
+  .qr-placeholder {
+    font-size: 13PX;
+  }
+
+  .search-input {
+    height: 40PX;
+    padding: 0 12PX;
+    line-height: 40PX;
+    border-radius: 8PX;
+    font-size: 14PX;
+  }
+
+  .yuanbao-option,
+  .pay-btn {
+    border-radius: 8PX;
+    font-size: 14PX;
+  }
+
+  .yuanbao-option {
+    padding: 10PX 8PX;
+  }
+
+  .pay-btn {
+    height: 40PX;
+    line-height: 40PX;
+  }
+
+  .pay-btn.alipay {
+    line-height: 38PX;
+  }
+
+  .recharge {
+    display: flex;
+    align-items: flex-start;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    gap: 24px;
+  }
+
+  .recharge-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .qr-panel,
+  .qr-panel-empty {
+    display: block;
+    position: sticky;
+    top: 28px;
+    width: 420PX;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  .yuanbao-option {
+    width: calc(25% - 14px);
+  }
+
+  .test-option {
+    width: calc(25% - 14px);
+    margin: 0 7px 14px;
+  }
+
+  .pay-btn,
+  .yuanbao-option,
+  .dropdown-item {
+    cursor: pointer;
+  }
 }

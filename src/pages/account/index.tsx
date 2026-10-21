@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button, Input, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
+import DesktopNav from '@/components/DesktopNav'
 import type { GameAccount } from '@/store/account'
 import { addAccount, getAccounts, removeAccount } from '@/store/accountService'
 import './index.scss'
@@ -51,7 +52,9 @@ export default function Account() {
   }
 
   return (
-    <View className='account'>
+    <View className='account-page'>
+      <DesktopNav current='account' />
+      <View className='account'>
       <View className='section'>
         <Text className='section-title'>添加账号</Text>
         <Input
@@ -81,6 +84,7 @@ export default function Account() {
             </View>
           ))
         )}
+      </View>
       </View>
     </View>
   )

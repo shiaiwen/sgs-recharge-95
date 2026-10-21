@@ -1,25 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Image, Input, Text, View } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
+import DesktopNav from '@/components/DesktopNav'
 import { YUANBAO_OPTIONS } from '@/constants/recharge'
-import { fetchAlipayQr, fetchWechatQr } from '@/services/pay'
+import { createPayOrder, fetchOrderPaid, type PayChannel, type PayOrder } from '@/services/pay'
 import type { GameAccount } from '@/store/account'
 import { searchAccounts } from '@/store/accountService'
 import './index.scss'
 
-type PayChannel = 'wechat' | 'alipay' | null
-
 export default function Recharge() {
-  const isH5 = Taro.getEnv() === Taro.ENV_TYPE.WEB
+  const isH5 = process.env.TARO_ENV === 'h5'
   const [keyword, setKeyword] = useState('')
   const [selectedAccount, setSelectedAccount] = useState<GameAccount | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const [matches, setMatches] = useState<GameAccount[]>([])
   const [yuanbao, setYuanbao] = useState('3000')
   const [customYuanbao, setCustomYuanbao] = useState('')
-  const [payChannel, setPayChannel] = useState<PayChannel>(null)
-  const [qrImage, setQrImage] = useState('')
+  const [payChannel, setPayChannel] = useState<PayChannel | null>(null)
+  const [payOrder, setPayOrder] = useState<PayOrder | null>(null)
   const [loading, setLoading] = useState(false)
+  const [paid, setPaid] = useState(false)
 
   const refreshMatches = (value: string) => {
     setMatches(searchAccounts(value))
@@ -50,6 +50,9 @@ export default function Recharge() {
   }
 
   const yuanbaoNumber = Number(customYuanbao || yuanbao)
+  const referenceYuan = Number.isInteger(yuanbaoNumber) && yuanbaoNumber > 0
+    ? (yuanbaoNumber / 100 * 0.95).toFixed(2)
+    : ''
   const rechargeAccount = keyword.trim()
 
   const validateForm = () => {
@@ -64,23 +67,52 @@ export default function Recharge() {
     return true
   }
 
+  useEffect(() => {
+    if (!payOrder || paid) {
+      return undefined
+    }
+    let timer = 0
+    let stopped = false
+    const poll = async () => {
+      try {
+        const done = await fetchOrderPaid(payOrder.channel, payOrder.orderId)
+        if (stopped) {
+          return
+        }
+        if (done) {
+          setPaid(true)
+          return
+        }
+      } catch {
+        return
+      }
+      timer = setTimeout(poll, 4000) as unknown as number
+    }
+    timer = setTimeout(poll, 4000) as unknown as number
+    return () => {
+      stopped = true
+      clearTimeout(timer)
+    }
+  }, [payOrder, paid])
+
   const requestQr = async (channel: PayChannel) => {
-    if (!channel || !validateForm()) {
+    if (!validateForm()) {
       return
     }
     setShowDropdown(false)
     setLoading(true)
     setPayChannel(channel)
-    setQrImage('')
+    setPayOrder(null)
+    setPaid(false)
     try {
-      const image = channel === 'wechat'
-        ? await fetchWechatQr(rechargeAccount, yuanbaoNumber)
-        : await fetchAlipayQr(rechargeAccount, yuanbaoNumber)
-      if (!image) {
-        Taro.showToast({ title: '请先在支付服务中接入出码', icon: 'none' })
+      const order = await createPayOrder(channel, rechargeAccount, yuanbaoNumber)
+      setPayOrder(order)
+      if (order.pageUrl && !isH5) {
+        Taro.navigateTo({
+          url: `/pages/cashier/index?src=${encodeURIComponent(order.pageUrl)}`
+        })
         return
       }
-      setQrImage(image)
       Taro.nextTick(() => {
         Taro.pageScrollTo({
           selector: '#qr-panel',
@@ -98,7 +130,15 @@ export default function Recharge() {
   }
 
   return (
-    <View className='recharge'>
+    <View className='recharge-page'>
+      <DesktopNav current='recharge' />
+      <View className='recharge'>
+      <View className='recharge-main'>
+      <View className='notice'>
+        <Text className='notice-title'>官服95折充值</Text>
+        <Text className='notice-line'>二维码由官方支付服务提供。</Text>
+        <Text className='notice-line'>使用本功能需自担风险，推荐使用前先小额充值以测试渠道可用性。</Text>
+      </View>
       {showDropdown ? (
         <View
           className='dropdown-mask'
@@ -161,7 +201,7 @@ export default function Recharge() {
         <Text className='test-tip'>
           第一次充值前，建议先充值 1 元宝，花费0.01 元, 进行测试。确认元宝总额和累计充值都发生变化后，再进行充值。
         </Text>
-        <Text className='section-title'>常用金额</Text>
+        <Text className='section-title'>常用元宝</Text>
         <View className='yuanbao-options'>
           {YUANBAO_OPTIONS.map((item) => (
             <View
@@ -176,15 +216,23 @@ export default function Recharge() {
             </View>
           ))}
         </View>
-        <Text className='section-title other-title'>其他金额</Text>
+        <Text className='section-title other-title'>其他元宝</Text>
         <Input
           className={`search-input ${customYuanbao ? 'active-input' : ''}`}
           type='number'
           placeholder='输入其他元宝数量'
           value={customYuanbao}
           onFocus={() => setShowDropdown(false)}
-          onInput={(event) => setCustomYuanbao(event.detail.value)}
+          onInput={(event) => {
+            const value = event.detail.value.replace(/[^\d]/g, '')
+            setCustomYuanbao(value)
+          }}
         />
+        <Text className='reference-price'>
+          {referenceYuan
+            ? `参考金额 ¥${referenceYuan}（100 元宝 = 0.95 元）`
+            : '参考金额按 100 元宝 = 0.95 元计算'}
+        </Text>
       </View>
 
       <View className='pay-actions'>
@@ -201,27 +249,40 @@ export default function Recharge() {
           {loading && payChannel === 'alipay' ? '生成中...' : '支付宝支付'}
         </View>
       </View>
+      </View>
 
-      {qrImage && payChannel ? (
-        <View className='qr-panel' id='qr-panel'>
+      <View className={`qr-panel ${payOrder && payChannel ? '' : 'qr-panel-empty'}`} id='qr-panel'>
+        {payOrder && payChannel ? (
+          <>
           <Text className='section-title'>
-            {payChannel === 'wechat' ? '微信收款码' : '支付宝收款码'}
+            {paid ? '支付成功' : payChannel === 'wechat' ? '微信收款码' : '支付宝收款码'}
           </Text>
-          <View className='qr-frame'>
-            <Image
-              className='qr-image'
-              src={qrImage}
-              mode='widthFix'
-              showMenuByLongpress={!isH5}
-            />
-          </View>
+          {payOrder.imageUrl ? (
+            <View className='qr-frame'>
+              <Image
+                className='qr-image'
+                src={payOrder.imageUrl}
+                mode='aspectFit'
+                showMenuByLongpress={!isH5}
+              />
+            </View>
+          ) : null}
+          {payOrder.pageUrl && isH5 ? (
+            <View className='qr-frame'>
+              <iframe className='pay-frame' src={payOrder.pageUrl} title='支付宝支付' scrolling='no' />
+            </View>
+          ) : null}
           <Text className='qr-tip'>
-            {isH5
-              ? '长按二维码保存到手机相册'
-              : '长按二维码，使用微信菜单分享'}
+            {paid
+              ? '请返回游戏核对元宝到账'
+              : '二维码由官方支付服务提供。支付前请核对账号与金额。'}
           </Text>
-        </View>
-      ) : null}
+          </>
+        ) : (
+          <Text className='qr-placeholder'>生成后，二维码会显示在这里</Text>
+        )}
+      </View>
+      </View>
     </View>
   )
 }

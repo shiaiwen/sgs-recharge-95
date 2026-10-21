@@ -109,3 +109,55 @@
   background: #fff1f2;
   border-radius: 10px;
 }
+
+@media (min-width: 960px) {
+  .account-page {
+    max-width: 1120PX;
+    margin: 0 auto;
+    padding: 28PX 24PX 48PX;
+    box-sizing: border-box;
+  }
+
+  .section {
+    padding: 20PX 22PX;
+    border-radius: 12PX;
+    box-shadow: 0 1PX 2PX rgba(15, 23, 42, 0.04);
+  }
+
+  .section-title {
+    margin-bottom: 12PX;
+    font-size: 15PX;
+  }
+
+  .field,
+  .add-btn {
+    height: 40PX;
+    border-radius: 8PX;
+    font-size: 14PX;
+    line-height: 40PX;
+  }
+
+  .field {
+    padding: 0 12PX;
+  }
+
+  .name {
+    font-size: 14PX;
+  }
+
+  .empty,
+  .delete {
+    font-size: 13PX;
+  }
+
+  .account {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .add-btn,
+  .delete {
+    cursor: pointer;
+  }
+}

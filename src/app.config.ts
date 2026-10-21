@@ -1,12 +1,13 @@
 export default defineAppConfig({
   pages: [
     'pages/recharge/index',
-    'pages/account/index'
+    'pages/account/index',
+    'pages/cashier/index'
   ],
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#2563EB',
-    navigationBarTitleText: '充值中心',
+    navigationBarTitleText: '官服95折充值',
     navigationBarTextStyle: 'white',
     backgroundColor: '#F5F7FB'
   },

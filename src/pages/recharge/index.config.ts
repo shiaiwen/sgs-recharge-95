@@ -1,4 +1,4 @@
 export default definePageConfig({
-  navigationBarTitleText: '充值',
+  navigationBarTitleText: '官服95折充值',
   enableShareAppMessage: true
 })
