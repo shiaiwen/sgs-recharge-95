@@ -3,6 +3,9 @@ import { defineConfig, type UserConfigExport } from '@tarojs/cli'
 import devConfig from './dev'
 import prodConfig from './prod'
 
+/** 官方支付只接受 sanguosha.com 来源。本地代理把 Origin 改成官网域，避免 403。 */
+const OFFICIAL_SITE_ORIGIN = 'https://web.sanguosha.com'
+
 export default defineConfig<'vite'>(async (merge) => {
   const baseConfig: UserConfigExport<'vite'> = {
     projectName: 'sanguosha-recharge-miniprogram',
@@ -50,7 +53,23 @@ export default defineConfig<'vite'>(async (merge) => {
     h5: {
       devServer: {
         port: 10087,
-        host: '0.0.0.0'
+        host: '0.0.0.0',
+        // 本地 H5 开发时把 /ol-payment 转到官方支付，和生产 Nginx 代理一致。
+        proxy: {
+          '/ol-payment': {
+            target: 'https://ol-payment.sanguosha.com',
+            changeOrigin: true,
+            secure: true,
+            rewrite: (requestPath: string) => requestPath.replace(/^\/ol-payment/, ''),
+            configure: (proxy) => {
+              proxy.on('proxyReq', (proxyReq) => {
+                proxyReq.setHeader('Origin', OFFICIAL_SITE_ORIGIN)
+                proxyReq.setHeader('Referer', `${OFFICIAL_SITE_ORIGIN}/`)
+                proxyReq.removeHeader('cookie')
+              })
+            }
+          }
+        }
       },
       publicPath: '/',
       staticDirectory: 'static',

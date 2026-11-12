@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Image, Input, Text, View } from '@tarojs/components'
-import Taro, { useDidShow } from '@tarojs/taro'
+import Taro, { useDidShow, useRouter } from '@tarojs/taro'
 import DesktopNav from '@/components/DesktopNav'
 import { YUANBAO_OPTIONS } from '@/constants/recharge'
 import { createPayOrder, fetchOrderPaid, type PayChannel, type PayOrder } from '@/services/pay'
@@ -8,8 +8,57 @@ import type { GameAccount } from '@/store/account'
 import { searchAccounts } from '@/store/accountService'
 import './index.scss'
 
+function readPresetAccount(routerAccount?: string) {
+  if (routerAccount?.trim()) {
+    return routerAccount.trim()
+  }
+  if (typeof window === 'undefined') {
+    return ''
+  }
+  const fromQuery = (query?: string) => {
+    if (!query) {
+      return ''
+    }
+    return new URLSearchParams(query.startsWith('?') ? query.slice(1) : query).get('account')?.trim() || ''
+  }
+  const search = fromQuery(window.location.search)
+  if (search) {
+    return search
+  }
+  const hash = window.location.hash
+  const queryIndex = hash.indexOf('?')
+  if (queryIndex >= 0) {
+    const fromHashQuery = fromQuery(hash.slice(queryIndex))
+    if (fromHashQuery) {
+      return fromHashQuery
+    }
+  }
+  const match = hash.match(/(?:[#&])account=([^&]+)/)
+  if (!match) {
+    return ''
+  }
+  try {
+    return decodeURIComponent(match[1]).trim()
+  } catch {
+    return match[1].trim()
+  }
+}
+
+function isOfficialAlipayPage(pageUrl?: string) {
+  if (!pageUrl) {
+    return false
+  }
+  try {
+    const page = new URL(pageUrl)
+    return page.origin === 'https://openapi.alipay.com' && page.pathname === '/gateway.do'
+  } catch {
+    return false
+  }
+}
+
 export default function Recharge() {
   const isH5 = process.env.TARO_ENV === 'h5'
+  const router = useRouter()
   const [keyword, setKeyword] = useState('')
   const [selectedAccount, setSelectedAccount] = useState<GameAccount | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
@@ -20,10 +69,20 @@ export default function Recharge() {
   const [payOrder, setPayOrder] = useState<PayOrder | null>(null)
   const [loading, setLoading] = useState(false)
   const [paid, setPaid] = useState(false)
+  const [alipayCashierOpen, setAlipayCashierOpen] = useState(false)
 
   const refreshMatches = (value: string) => {
     setMatches(searchAccounts(value))
   }
+
+  useEffect(() => {
+    const preset = readPresetAccount(router.params.account)
+    if (!preset) {
+      return
+    }
+    setKeyword(preset)
+    setMatches(searchAccounts(preset))
+  }, [router.params.account])
 
   useDidShow(() => {
     refreshMatches(keyword)
@@ -74,6 +133,9 @@ export default function Recharge() {
     let timer = 0
     let stopped = false
     const poll = async () => {
+      if (stopped) {
+        return
+      }
       try {
         const done = await fetchOrderPaid(payOrder.channel, payOrder.orderId)
         if (stopped) {
@@ -81,12 +143,16 @@ export default function Recharge() {
         }
         if (done) {
           setPaid(true)
+          setAlipayCashierOpen(false)
+          Taro.showToast({ title: '支付成功', icon: 'success' })
           return
         }
       } catch {
-        return
+        // 网络抖动时继续轮询，避免一次失败就停掉支付结果检测
       }
-      timer = setTimeout(poll, 4000) as unknown as number
+      if (!stopped) {
+        timer = setTimeout(poll, 4000) as unknown as number
+      }
     }
     timer = setTimeout(poll, 4000) as unknown as number
     return () => {
@@ -94,6 +160,7 @@ export default function Recharge() {
       clearTimeout(timer)
     }
   }, [payOrder, paid])
+
 
   const requestQr = async (channel: PayChannel) => {
     if (!validateForm()) {
@@ -104,10 +171,13 @@ export default function Recharge() {
     setPayChannel(channel)
     setPayOrder(null)
     setPaid(false)
+    setAlipayCashierOpen(false)
     try {
       const order = await createPayOrder(channel, rechargeAccount, yuanbaoNumber)
       setPayOrder(order)
-      if (order.pageUrl && !isH5) {
+      if (order.pageUrl && isH5) {
+        setAlipayCashierOpen(true)
+      } else if (order.pageUrl && !isH5) {
         Taro.navigateTo({
           url: `/pages/cashier/index?src=${encodeURIComponent(order.pageUrl)}`
         })
@@ -128,6 +198,13 @@ export default function Recharge() {
       setLoading(false)
     }
   }
+
+  const showAlipayCashier = Boolean(
+    isH5 &&
+    alipayCashierOpen &&
+    !paid &&
+    isOfficialAlipayPage(payOrder?.pageUrl)
+  )
 
   return (
     <View className='recharge-page'>
@@ -201,7 +278,7 @@ export default function Recharge() {
         <Text className='test-tip'>
           第一次充值前，建议先充值 1 元宝，花费0.01 元, 进行测试。确认元宝总额和累计充值都发生变化后，再进行充值。
         </Text>
-        <Text className='section-title'>常用元宝</Text>
+        <Text className='section-title other-title'>常用元宝</Text>
         <View className='yuanbao-options'>
           {YUANBAO_OPTIONS.map((item) => (
             <View
@@ -230,7 +307,7 @@ export default function Recharge() {
         />
         <Text className='reference-price'>
           {referenceYuan
-            ? `参考金额 ¥${referenceYuan}（100 元宝 = 0.95 元）`
+            ? `参考金额 ￥${referenceYuan}（100 元宝 = 0.95 元）`
             : '参考金额按 100 元宝 = 0.95 元计算'}
         </Text>
       </View>
@@ -255,7 +332,7 @@ export default function Recharge() {
         {payOrder && payChannel ? (
           <>
           <Text className='section-title'>
-            {paid ? '支付成功' : payChannel === 'wechat' ? '微信收款码' : '支付宝收款码'}
+            {paid ? '支付成功' : payChannel === 'wechat' ? '微信收款码' : '支付宝付款'}
           </Text>
           {payOrder.imageUrl ? (
             <View className='qr-frame'>
@@ -267,15 +344,23 @@ export default function Recharge() {
               />
             </View>
           ) : null}
-          {payOrder.pageUrl && isH5 ? (
-            <View className='qr-frame'>
-              <iframe className='pay-frame' src={payOrder.pageUrl} title='支付宝支付' scrolling='no' />
+          {payOrder.pageUrl && isH5 && !paid ? (
+            <View className='alipay-panel-actions'>
+              <View
+                className='pay-open-btn'
+                hoverClass='pay-open-btn-hover'
+                onClick={() => setAlipayCashierOpen(true)}
+              >
+                打开支付宝收银台
+              </View>
             </View>
           ) : null}
           <Text className='qr-tip'>
             {paid
               ? '请返回游戏核对元宝到账'
-              : '二维码由官方支付服务提供。支付前请核对账号与金额。'}
+              : payOrder.pageUrl
+                ? `请在支付宝收银台完成支付。${payOrder.amount ? `应付 ￥${payOrder.amount}。` : ''}支付前请核对账号与金额。关闭后可重新打开，无需重新下单。`
+                : '二维码由官方支付服务提供。支付前请核对账号与金额。'}
           </Text>
           </>
         ) : (
@@ -283,6 +368,28 @@ export default function Recharge() {
         )}
       </View>
       </View>
+      {showAlipayCashier && payOrder?.pageUrl ? (
+        <div className='alipay-cashier-mask'>
+          <div className='alipay-cashier'>
+            <button
+              type='button'
+              className='alipay-cashier-close'
+              onClick={() => setAlipayCashierOpen(false)}
+              aria-label='关闭'
+            >
+              ×
+            </button>
+            <iframe
+              className='alipay-cashier-frame'
+              src={payOrder.pageUrl}
+              title='支付宝官方收银台'
+              referrerPolicy='no-referrer'
+              scrolling='no'
+              allow='payment'
+            />
+          </div>
+        </div>
+      ) : null}
     </View>
   )
 }

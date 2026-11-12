@@ -286,14 +286,35 @@
   transform: none !important;
 }
 
-.pay-frame {
-  width: 168PX;
-  height: 184PX;
-  border: 0;
-  background: #fff;
-  flex-shrink: 0;
-  transform: scale(1.333);
-  transform-origin: center center;
+.alipay-panel-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.pay-open-btn {
+  display: block;
+  width: 80%;
+  max-width: 520px;
+  margin: 8px auto 0;
+  height: 88px;
+  line-height: 88px;
+  border-radius: 18px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.pay-open-btn {
+  color: #fff;
+  background: #1677ff;
+}
+
+
+.pay-open-btn-hover {
+  opacity: 0.92;
 }
 
 .qr-tip {
@@ -314,6 +335,76 @@
   font-size: 28px;
   line-height: 1.6;
 }
+
+.alipay-cashier-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24PX;
+  background: rgba(15, 23, 42, 0.55);
+  box-sizing: border-box;
+}
+
+.alipay-cashier {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: max-content;
+  height: max-content;
+  padding: 40PX;
+  background: #fff;
+  border-radius: 16PX;
+  box-shadow: 0 24PX 64PX rgba(15, 23, 42, 0.28);
+  box-sizing: border-box;
+}
+
+.alipay-cashier-close {
+  position: absolute;
+  top: 8PX;
+  right: 8PX;
+  z-index: 2;
+  width: 24PX;
+  height: 24PX;
+  padding: 0;
+  color: #64748b;
+  background: transparent;
+  border: 0;
+  font-size: 22PX;
+  font-weight: 500;
+  line-height: 24PX;
+  text-align: center;
+  cursor: pointer;
+}
+
+.alipay-cashier-frame {
+  display: block;
+  width: 168PX;
+  height: 184PX;
+  margin: 0;
+  border: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+@media (max-width: 959px) {
+  .alipay-cashier-mask {
+    padding: 16PX;
+  }
+
+  .alipay-cashier {
+    max-width: calc(100vw - 32PX);
+    max-height: calc(100vh - 32PX);
+    border-radius: 12PX;
+  }
+}
+
 
 @media (min-width: 960px) {
   .recharge-page {
@@ -408,7 +499,19 @@
 
   .pay-btn,
   .yuanbao-option,
-  .dropdown-item {
+  .dropdown-item,
+  .pay-open-btn,
+  .alipay-cashier-close {
     cursor: pointer;
   }
+
+  .pay-open-btn {
+    width: 240PX;
+    height: 40PX;
+    line-height: 40PX;
+    margin-top: 12PX;
+    border-radius: 8PX;
+    font-size: 14PX;
+  }
+
 }
